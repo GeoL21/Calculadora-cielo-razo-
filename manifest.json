@@ -2,6 +2,7 @@
   "name": "Cielo Raso Drywall",
   "short_name": "Cielo Raso",
   "description": "Calculadora de materiales para cielo raso de yeso cartón",
+  "id": "./",
   "lang": "es",
   "start_url": "./",
   "scope": "./",

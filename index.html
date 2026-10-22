@@ -180,6 +180,33 @@
   .aparece { animation: aparece 260ms ease-out both; }
   @keyframes aparece { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
+  /* Instalar */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .instalar {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px;
+    font: 600 .9rem var(--font); cursor: pointer; white-space: nowrap;
+    background: color-mix(in srgb, var(--on-hero) 12%, transparent); color: var(--on-hero);
+    border: 1px solid color-mix(in srgb, var(--on-hero) 28%, transparent);
+    transition: background var(--t-fast);
+  }
+  .instalar svg { width: 18px; height: 18px; }
+  .instalar:hover { background: color-mix(in srgb, var(--on-hero) 20%, transparent); }
+  .instalar:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  .instalar[hidden] { display: none; }
+  dialog.guia {
+    border: 1px solid var(--border); border-radius: var(--r-lg); padding: 0; width: min(92vw, 420px);
+    background: var(--card); color: var(--fg); box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  }
+  dialog.guia::backdrop { background: rgba(15,23,42,.6); }
+  .guia-in { padding: 20px; }
+  .guia-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .guia-cab h2 { margin: 0; font-size: 1.1rem; }
+  .cerrar { width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted); border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+  .cerrar:focus-visible { outline: 2px solid var(--ring); }
+  .guia ol { margin: 8px 0 0; padding-left: 20px; color: var(--fg-2); }
+  .guia li { margin: 8px 0; }
+  .guia p { color: var(--muted); font-size: .88rem; margin: 12px 0 0; }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
@@ -203,12 +230,17 @@
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4M12 2v13"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
 </svg>
 
 <header class="hero">
   <div class="hero-in">
-    <div class="marca"><span class="logo"><svg class="i"><use href="#i-grid"/></svg></span>Calculadora de materiales</div>
+    <div class="top">
+      <div class="marca"><span class="logo"><svg class="i"><use href="#i-grid"/></svg></span>Calculadora de materiales</div>
+      <button class="instalar" id="instalar" type="button" hidden><svg class="i" aria-hidden="true"><use href="#i-download"/></svg>Instalar app</button>
+    </div>
     <h1>Cielo raso en drywall</h1>
     <p>Cuarto rectangular · principales, omegas y cuelgas de ángulo</p>
   </div>
@@ -324,6 +356,16 @@
     <button class="btn" id="copiar" type="button" aria-label="Copiar lista"><svg class="i" aria-hidden="true"><use href="#i-copy"/></svg>Copiar</button>
   </div>
 </div>
+
+<dialog class="guia" id="guia" aria-labelledby="guia-t">
+  <div class="guia-in">
+    <div class="guia-cab">
+      <h2 id="guia-t">Instalar la app</h2>
+      <button class="cerrar" type="button" id="guia-cerrar" aria-label="Cerrar"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <div id="guia-pasos"></div>
+  </div>
+</dialog>
 
 <div class="toast" id="toast" role="status"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span></span></div>
 
@@ -488,6 +530,50 @@
   textos.forEach(c => $(c).addEventListener('input', calcular));
   radios.forEach(n => document.querySelectorAll(`input[name="${n}"]`).forEach(r => r.addEventListener('change', calcular)));
   calcular();
+
+  // ---- Instalar en teléfono o PC ----
+  const btnInstalar = $('instalar');
+  let promptInstalar = null;
+  const yaInstalada = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  if (!yaInstalada()) btnInstalar.hidden = false;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    promptInstalar = e;
+    btnInstalar.hidden = false;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    promptInstalar = null;
+    btnInstalar.hidden = true;
+    aviso('App instalada');
+  });
+
+  btnInstalar.addEventListener('click', async () => {
+    if (promptInstalar) {
+      promptInstalar.prompt();
+      const { outcome } = await promptInstalar.userChoice;
+      if (outcome === 'accepted') btnInstalar.hidden = true;
+      promptInstalar = null;
+      return;
+    }
+    // Sin instalación directa: mostrar los pasos según el navegador
+    let pasos;
+    if (esIOS) {
+      pasos = `<ol><li>Abre esta página en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (cuadro con flecha hacia arriba).</li><li>Elige <b>Agregar a pantalla de inicio</b> y toca <b>Agregar</b>.</li></ol>`;
+    } else if (/android/i.test(navigator.userAgent)) {
+      pasos = `<ol><li>Abre esta página en <b>Chrome</b>.</li><li>Toca el menú <b>⋮</b> arriba a la derecha.</li><li>Elige <b>Instalar app</b> o <b>Agregar a pantalla principal</b>.</li></ol>`;
+    } else {
+      pasos = `<ol><li>Abre esta página en <b>Chrome</b> o <b>Edge</b>.</li><li>Haz clic en el ícono de instalar al final de la barra de direcciones, o en el menú <b>⋮</b> → <b>Guardar y compartir</b> → <b>Instalar página como app</b>.</li><li>Confirma con <b>Instalar</b>.</li></ol>`;
+    }
+    $('guia-pasos').innerHTML = pasos + '<p>Después la abres desde su ícono, como cualquier aplicación, y funciona sin internet.</p>';
+    $('guia').showModal();
+  });
+
+  $('guia-cerrar').onclick = () => $('guia').close();
+  $('guia').addEventListener('click', e => { if (e.target === $('guia')) $('guia').close(); });
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
