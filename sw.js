@@ -1,5 +1,5 @@
 // Cambia la versión cada vez que actualices archivos para forzar la recarga
-const CACHE = 'cielo-raso-v4';
+const CACHE = 'cielo-raso-v5';
 const ARCHIVOS = ['./', 'index.html', 'calculo.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {

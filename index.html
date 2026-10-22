@@ -105,6 +105,10 @@
   .seg input:focus-visible + label { outline: 2px solid var(--ring); outline-offset: 1px; }
 
   .fila { margin-top: 16px; }
+  .seg .rec { display: block; font-size: .68rem; font-weight: 600; color: var(--accent-ink); }
+  .desp-otro { margin-top: 10px; max-width: 160px; }
+  .desp-otro[hidden] { display: none; }
+  .ayuda { font-size: .82rem; color: var(--muted); margin: 8px 0 0; }
   .aviso { display: flex; gap: 8px; align-items: flex-start; color: var(--danger); font-size: .88rem; font-weight: 500; margin: 12px 0 0; }
   .aviso:empty { display: none; }
 
@@ -285,6 +289,17 @@
       </div>
     </div>
 
+    <div class="campo fila">
+      <label id="l-desp">Desperdicio en láminas y perfiles</label>
+      <div class="seg" role="radiogroup" aria-labelledby="l-desp">
+        <input type="radio" name="modoDesp" id="dp-0" value="0"><label for="dp-0">Sin desperdicio</label>
+        <input type="radio" name="modoDesp" id="dp-10" value="10" checked><label for="dp-10">10 % <span class="rec">recomendado</span></label>
+        <input type="radio" name="modoDesp" id="dp-o" value="otro"><label for="dp-o">Otro</label>
+      </div>
+      <div class="caja desp-otro" id="caja-desp" hidden><input id="desperdicio" inputmode="decimal" value="10" aria-label="Porcentaje de desperdicio"><span class="u">%</span></div>
+      <p class="ayuda" id="ayuda-desp"></p>
+    </div>
+
     <p class="aviso" id="aviso" role="alert"></p>
 
     <details class="ajustes">
@@ -307,7 +322,6 @@
       <div class="sub">Presentaciones y rendimientos</div>
       <div class="grid3">
         <div class="campo"><label for="extraCuelga">Extra cuelga</label><div class="caja"><input id="extraCuelga" inputmode="decimal" value="0,10"><span class="u">m</span></div></div>
-        <div class="campo"><label for="desperdicio">Desperdicio</label><div class="caja"><input id="desperdicio" inputmode="decimal" value="10"><span class="u">%</span></div></div>
         <div class="campo"><label for="rolloCinta">Rollo cinta</label><div class="caja"><input id="rolloCinta" inputmode="decimal" value="75"><span class="u">m</span></div></div>
         <div class="campo"><label for="cuneteMasilla">Cuñete</label><div class="caja"><input id="cuneteMasilla" inputmode="decimal" value="28"><span class="u">kg</span></div></div>
         <div class="campo"><label for="manos">Manos pintura</label><input id="manos" inputmode="numeric" value="2"></div>
@@ -345,7 +359,7 @@
       <p class="info-plano" id="infoPlano"></p>
 
       <div id="lista"></div>
-      <p class="nota">Cantidades redondeadas hacia arriba, con el desperdicio indicado. Confírmalas con tu proveedor antes de comprar.</p>
+      <p class="nota">Cantidades redondeadas a piezas completas. Aunque elijas «Sin desperdicio», siempre se redondea hacia arriba porque no se venden pedazos. Confírmalas con tu proveedor antes de comprar.</p>
     </div>
   </section>
 </main>
@@ -373,7 +387,7 @@
 <script>
   const textos = ['largo','ancho','descuelgue','extraCuelga','sepPrincipales','sepOmegas','sepCuelgas',
     'largoPrincipal','largoOmega','largoAngulo','desperdicio','rolloCinta','cuneteMasilla','manos','rendimientoPintura'];
-  const radios = ['acabado'];
+  const radios = ['acabado', 'modoDesp'];
   const $ = id => document.getElementById(id);
   const num = (v, d = 2) => Number(v).toLocaleString('es-CO', { maximumFractionDigits: d, minimumFractionDigits: 0 });
   const leer = id => parseFloat(String($(id).value).replace(/\s/g, '').replace(',', '.'));
@@ -402,7 +416,20 @@
     el.setAttribute('aria-invalid', malo ? 'true' : 'false');
   }
 
+  const AYUDA_DESP = {
+    '0': 'Compras justo lo calculado. Úsalo solo si los cortes los hace alguien con experiencia y puedes conseguir piezas sueltas si falta algo.',
+    '10': 'Cubre cortes, uniones y alguna lámina dañada. Es lo usual para cuartos rectangulares.',
+    'otro': 'Usa 15 % si el cuarto tiene muchos recortes (columnas, lámparas, ductos) o si la cuadrilla es nueva.',
+  };
+  function aplicarModoDesp() {
+    const m = radio('modoDesp');
+    $('caja-desp').hidden = m !== 'otro';
+    if (m !== 'otro') $('desperdicio').value = m;
+    $('ayuda-desp').textContent = AYUDA_DESP[m];
+  }
+
   function calcular() {
+    aplicarModoDesp();
     guardar();
     const p = { acabado: radio('acabado') };
     let malo = false;
@@ -437,7 +464,7 @@
 
     const grupos = [
       ['Estructura', 'i-layers', [
-        ['Láminas de yeso cartón', '1,22 × 2,44 m · ' + num(r.area) + ' m² + ' + num(p.desperdicio, 0) + ' %', r.laminas, 'und'],
+        ['Láminas de yeso cartón', '1,22 × 2,44 m · ' + num(r.area) + ' m²' + (p.desperdicio > 0 ? ' + ' + num(p.desperdicio, 1) + ' % desperdicio' : ' · sin desperdicio'), r.laminas, 'und'],
         ['Principales', `${num(r.principales.metros, 1)} m lineales`, r.principales.piezas, `× ${num(p.largoPrincipal)} m`],
         ['Omegas', `${num(r.omegas.metros, 1)} m lineales`, r.omegas.piezas, `× ${num(p.largoOmega)} m`],
         ['Ángulo perimetral', `${num(r.angulo.metros, 1)} m de perímetro`, r.angulo.piezas, `× ${num(p.largoAngulo)} m`],
