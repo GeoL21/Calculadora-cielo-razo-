@@ -80,3 +80,38 @@ function calcularCielo(p) {
 }
 
 if (typeof module !== 'undefined') module.exports = { calcularCielo };
+
+// Cielo raso en PVC sobre la misma estructura (principales + omegas + cuelgas de ángulo).
+// Las láminas de PVC van a lo largo del cuarto, perpendiculares a las omegas.
+function calcularPVC(p) {
+  const base = calcularCielo(Object.assign({}, p, { sepOmegas: p.sepOmegasPVC }));
+  const { L, A, perimetro, nOmegas } = base;
+  const desp = p.desperdicio / 100;
+  const anchoLam = p.anchoLamPVC / 100; // viene en cm
+  const largoLam = p.largoLamPVC;
+
+  const filas = Math.ceil(A / anchoLam - 1e-9);
+  let piezasBase, empalmes = 0;
+  if (L <= largoLam) {
+    const filasPorLamina = Math.floor(largoLam / L + 1e-9); // de una lámina salen varias filas
+    piezasBase = Math.ceil(filas / filasPorLamina);
+  } else {
+    piezasBase = Math.ceil((filas * L) / largoLam - 1e-9);
+    empalmes = filas * (Math.ceil(L / largoLam - 1e-9) - 1);
+  }
+  const laminas = Math.ceil(piezasBase * (1 + desp) - 1e-9);
+  const m2Laminas = laminas * anchoLam * largoLam;
+
+  // Tornillo lenteja: uno en cada cruce de lámina con omega y en cada extremo sobre el ángulo
+  const tornillosLenteja = Math.ceil(filas * (nOmegas + 2) * 1.1);
+
+  const mediaCana = Math.ceil((perimetro * (1 + desp)) / p.largoMediaCana - 1e-9);
+
+  // Tornillos de estructura: igual que drywall
+  return Object.assign({}, base, {
+    laminas, filas, empalmes, m2Laminas, tornillosLenteja, mediaCana,
+    piezasBase,
+  });
+}
+
+if (typeof module !== 'undefined') module.exports.calcularPVC = calcularPVC;

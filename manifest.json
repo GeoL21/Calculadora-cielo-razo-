@@ -1,7 +1,7 @@
 {
-  "name": "Cielo Raso Drywall",
+  "name": "Cielo Raso Drywall y PVC",
   "short_name": "Cielo Raso",
-  "description": "Calculadora de materiales para cielo raso de yeso cartón",
+  "description": "Calculadora de materiales para cielo raso en drywall o PVC",
   "id": "./",
   "lang": "es",
   "start_url": "./",

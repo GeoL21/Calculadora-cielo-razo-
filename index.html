@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cielo Raso Drywall</title>
+<title>Cielo Raso Drywall y PVC</title>
 <meta name="description" content="Calcula los materiales para un cielo raso de yeso cartón con principales, omegas y cuelgas de ángulo.">
 <meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="manifest.json">
@@ -105,6 +105,10 @@
   .seg input:focus-visible + label { outline: 2px solid var(--ring); outline-offset: 1px; }
 
   .fila { margin-top: 16px; }
+  body[data-modo="pvc"] .solo-dw, body[data-modo="dw"] .solo-pvc { display: none !important; }
+  .seg.material { margin-bottom: 18px; }
+  .seg.material label { min-height: 46px; font-size: 1rem; gap: 2px; }
+  .seg.material small { display: block; font-size: .7rem; font-weight: 500; opacity: .85; }
   .seg .rec { display: block; font-size: .68rem; font-weight: 600; color: var(--accent-ink); }
   .desp-otro { margin-top: 10px; max-width: 160px; }
   .desp-otro[hidden] { display: none; }
@@ -217,7 +221,7 @@
   @media (min-width: 700px) { .hero { padding-bottom: 72px; } }
 </style>
 </head>
-<body>
+<body data-modo="dw">
 
 <!-- Íconos (estilo Lucide) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -245,7 +249,7 @@
       <div class="marca"><span class="logo"><svg class="i"><use href="#i-grid"/></svg></span>Calculadora de materiales</div>
       <button class="instalar" id="instalar" type="button" hidden><svg class="i" aria-hidden="true"><use href="#i-download"/></svg>Instalar app</button>
     </div>
-    <h1>Cielo raso en drywall</h1>
+    <h1 id="titulo">Cielo raso en drywall</h1>
     <p>Cuarto rectangular · principales, omegas y cuelgas de ángulo</p>
   </div>
 </header>
@@ -253,6 +257,11 @@
 <main>
   <section class="card" aria-labelledby="t-medidas">
     <h2 class="card-t" id="t-medidas"><span class="ico"><svg class="i"><use href="#i-ruler"/></svg></span>Medidas del cuarto</h2>
+
+    <div class="seg material" role="radiogroup" aria-label="Material del cielo raso">
+      <input type="radio" name="material" id="mt-dw" value="dw" checked><label for="mt-dw">Drywall<small>yeso cartón</small></label>
+      <input type="radio" name="material" id="mt-pvc" value="pvc"><label for="mt-pvc">PVC<small>lámina machihembrada</small></label>
+    </div>
 
     <div class="grid2">
       <div class="campo">
@@ -280,13 +289,23 @@
         <label for="descuelgue">Descuelgue</label>
         <div class="caja"><input id="descuelgue" inputmode="decimal" value="0,30"><span class="u">m</span></div>
       </div>
-      <div class="campo">
+      <div class="campo solo-dw">
         <label id="l-acabado">Masilla</label>
         <div class="seg" role="radiogroup" aria-labelledby="l-acabado">
           <input type="radio" name="acabado" id="ac-j" value="juntas" checked><label for="ac-j">Juntas</label>
           <input type="radio" name="acabado" id="ac-t" value="total"><label for="ac-t">Total</label>
         </div>
       </div>
+    </div>
+
+    <div class="solo-pvc fila">
+      <div class="sub" style="margin-top:0">Lámina de PVC disponible</div>
+      <div class="grid3">
+        <div class="campo"><label for="anchoLamPVC">Ancho</label><div class="caja"><input id="anchoLamPVC" inputmode="decimal" value="25"><span class="u">cm</span></div></div>
+        <div class="campo"><label for="largoLamPVC">Largo</label><div class="caja"><input id="largoLamPVC" inputmode="decimal" value="5,95"><span class="u">m</span></div></div>
+        <div class="campo"><label for="largoMediaCana">Media caña</label><div class="caja"><input id="largoMediaCana" inputmode="decimal" value="5,95"><span class="u">m</span></div></div>
+      </div>
+      <p class="ayuda">Escribe la medida de la lámina y de la media caña que tenga tu proveedor.</p>
     </div>
 
     <div class="campo fila">
@@ -308,7 +327,8 @@
       <div class="sub">Separación entre</div>
       <div class="grid3">
         <div class="campo"><label for="sepPrincipales">Principales</label><div class="caja"><input id="sepPrincipales" inputmode="decimal" value="0,90"><span class="u">m</span></div></div>
-        <div class="campo"><label for="sepOmegas">Omegas</label><div class="caja"><input id="sepOmegas" inputmode="decimal" value="0,61"><span class="u">m</span></div></div>
+        <div class="campo solo-dw"><label for="sepOmegas">Omegas</label><div class="caja"><input id="sepOmegas" inputmode="decimal" value="0,61"><span class="u">m</span></div></div>
+        <div class="campo solo-pvc"><label for="sepOmegasPVC">Omegas</label><div class="caja"><input id="sepOmegasPVC" inputmode="decimal" value="0,60"><span class="u">m</span></div></div>
         <div class="campo"><label for="sepCuelgas">Cuelgas</label><div class="caja"><input id="sepCuelgas" inputmode="decimal" value="0,90"><span class="u">m</span></div></div>
       </div>
 
@@ -322,10 +342,10 @@
       <div class="sub">Presentaciones y rendimientos</div>
       <div class="grid3">
         <div class="campo"><label for="extraCuelga">Extra cuelga</label><div class="caja"><input id="extraCuelga" inputmode="decimal" value="0,10"><span class="u">m</span></div></div>
-        <div class="campo"><label for="rolloCinta">Rollo cinta</label><div class="caja"><input id="rolloCinta" inputmode="decimal" value="75"><span class="u">m</span></div></div>
-        <div class="campo"><label for="cuneteMasilla">Cuñete</label><div class="caja"><input id="cuneteMasilla" inputmode="decimal" value="28"><span class="u">kg</span></div></div>
-        <div class="campo"><label for="manos">Manos pintura</label><input id="manos" inputmode="numeric" value="2"></div>
-        <div class="campo"><label for="rendimientoPintura">Rendimiento</label><div class="caja"><input id="rendimientoPintura" inputmode="decimal" value="35" style="padding-right:52px"><span class="u">m²/gl</span></div></div>
+        <div class="campo solo-dw"><label for="rolloCinta">Rollo cinta</label><div class="caja"><input id="rolloCinta" inputmode="decimal" value="75"><span class="u">m</span></div></div>
+        <div class="campo solo-dw"><label for="cuneteMasilla">Cuñete</label><div class="caja"><input id="cuneteMasilla" inputmode="decimal" value="28"><span class="u">kg</span></div></div>
+        <div class="campo solo-dw"><label for="manos">Manos pintura</label><input id="manos" inputmode="numeric" value="2"></div>
+        <div class="campo solo-dw"><label for="rendimientoPintura">Rendimiento</label><div class="caja"><input id="rendimientoPintura" inputmode="decimal" value="35" style="padding-right:52px"><span class="u">m²/gl</span></div></div>
       </div>
 
       <p class="nota">«Extra cuelga» es lo que se suma al descuelgue para fijar la cuelga a la losa y a la principal. Ajusta largos y presentaciones a lo que maneje tu proveedor; se guardan en este celular.</p>
@@ -386,8 +406,9 @@
 <script src="calculo.js"></script>
 <script>
   const textos = ['largo','ancho','descuelgue','extraCuelga','sepPrincipales','sepOmegas','sepCuelgas',
-    'largoPrincipal','largoOmega','largoAngulo','desperdicio','rolloCinta','cuneteMasilla','manos','rendimientoPintura'];
-  const radios = ['acabado', 'modoDesp'];
+    'largoPrincipal','largoOmega','largoAngulo','desperdicio','rolloCinta','cuneteMasilla','manos','rendimientoPintura',
+    'sepOmegasPVC','anchoLamPVC','largoLamPVC','largoMediaCana'];
+  const radios = ['acabado', 'modoDesp', 'material'];
   const $ = id => document.getElementById(id);
   const num = (v, d = 2) => Number(v).toLocaleString('es-CO', { maximumFractionDigits: d, minimumFractionDigits: 0 });
   const leer = id => parseFloat(String($(id).value).replace(/\s/g, '').replace(',', '.'));
@@ -430,6 +451,10 @@
 
   function calcular() {
     aplicarModoDesp();
+    const material = radio('material');
+    const esPVC = material === 'pvc';
+    document.body.dataset.modo = material;
+    $('titulo').textContent = esPVC ? 'Cielo raso en PVC' : 'Cielo raso en drywall';
     guardar();
     const p = { acabado: radio('acabado') };
     let malo = false;
@@ -451,7 +476,7 @@
     }
     $('aviso').innerHTML = (p.largo > 50 || p.ancho > 50) ? icono('i-alert') + '<span>Las medidas parecen muy grandes; revisa que estén en metros.</span>' : '';
 
-    const r = calcularCielo(p);
+    const r = esPVC ? calcularPVC(p) : calcularCielo(p);
     $('vacio').hidden = true;
     $('resultado').hidden = false;
     if (primeraVez) { $('resultado').classList.remove('aparece'); void $('resultado').offsetWidth; $('resultado').classList.add('aparece'); primeraVez = false; }
@@ -462,7 +487,26 @@
     $('rLam').textContent = r.laminas;
     $('infoPlano').textContent = `${r.nPrincipales} principales a lo largo y ${r.nOmegas} omegas atravesadas · ${r.cuelgas} cuelgas`;
 
-    const grupos = [
+    const txtDesp = p.desperdicio > 0 ? ' + ' + num(p.desperdicio, 1) + ' % desperdicio' : ' · sin desperdicio';
+    const grupos = esPVC ? [
+      ['Lámina y remate', 'i-grid', [
+        ['Lámina de PVC', `${num(p.anchoLamPVC, 1)} cm × ${num(p.largoLamPVC)} m · ${r.filas} hileras de ${num(r.L)} m` + txtDesp, r.laminas, 'und'],
+        ...(r.empalmes > 0 ? [['Unión H (empalme)', 'Donde una lámina no alcanza el largo del cuarto', r.empalmes, 'und']] : []),
+        ['Media caña', `${num(r.perimetro, 1)} m de perímetro`, r.mediaCana, `× ${num(p.largoMediaCana)} m`],
+      ]],
+      ['Estructura', 'i-layers', [
+        ['Principales', `${num(r.principales.metros, 1)} m lineales`, r.principales.piezas, `× ${num(p.largoPrincipal)} m`],
+        ['Omegas', `${num(r.omegas.metros, 1)} m lineales · cada ${num(p.sepOmegasPVC)} m`, r.omegas.piezas, `× ${num(p.largoOmega)} m`],
+        ['Ángulo perimetral', `${num(r.angulo.metros, 1)} m de perímetro`, r.angulo.piezas, `× ${num(p.largoAngulo)} m`],
+        ['Ángulo para cuelgas', `${r.cuelgas} cuelgas de ${num(r.largoCuelga)} m`, r.anguloCuelgas, `× ${num(p.largoAngulo)} m`],
+      ]],
+      ['Fijaciones', 'i-anchor', [
+        ['Clavo de impacto o chazo + tornillo', 'Cuelga a la losa · uno por cuelga', r.fijacionesLosa, 'und'],
+        ['Chazo + tornillo', 'Ángulo al muro · cada 0,60 m', r.fijacionesMuro, 'und'],
+        ['Tornillo lenteja punta broca 8 × 1/2"', 'Lámina a omega y al ángulo', r.tornillosLenteja, 'und'],
+        ['Tornillo framer 7 × 7/16"', 'Omegas, principales y cuelgas', r.tornillosEstructura, 'und'],
+      ]],
+    ] : [
       ['Estructura', 'i-layers', [
         ['Láminas de yeso cartón', '1,22 × 2,44 m · ' + num(r.area) + ' m²' + (p.desperdicio > 0 ? ' + ' + num(p.desperdicio, 1) + ' % desperdicio' : ' · sin desperdicio'), r.laminas, 'und'],
         ['Principales', `${num(r.principales.metros, 1)} m lineales`, r.principales.piezas, `× ${num(p.largoPrincipal)} m`],
@@ -484,7 +528,7 @@
     ];
 
     let html = '';
-    textoLista = `*Cielo raso ${num(r.L)} × ${num(r.A)} m* (${num(r.area)} m²)\n`;
+    textoLista = `*Cielo raso en ${esPVC ? 'PVC' : 'drywall'} ${num(r.L)} × ${num(r.A)} m* (${num(r.area)} m²)\n`;
     grupos.forEach(([titulo, ico, items]) => {
       html += `<div class="grupo"><div class="grupo-t">${icono(ico)}${titulo}</div><ul class="items">`;
       textoLista += `\n*${titulo}*\n`;
@@ -495,10 +539,10 @@
       html += '</ul></div>';
     });
     $('lista').innerHTML = html;
-    dibujar(r);
+    dibujar(r, esPVC ? p : null);
   }
 
-  function dibujar(r) {
+  function dibujar(r, pvc) {
     const W = 600, pad = 40;
     const maxH = 360;
     const esc = Math.min((W - pad * 2) / r.L, (maxH - pad * 2) / r.A);
@@ -506,8 +550,18 @@
     const H = h + pad * 2;
     const x0 = (W - w) / 2, y0 = pad;
     let s = '';
-    // Láminas como fondo sutil (2,44 a lo largo, 1,22 a lo ancho)
-    for (let y = 0, f = 0; y < r.A - 0.001; y += 1.22, f++) {
+    if (pvc) {
+      // Hileras de PVC a lo largo del cuarto
+      const a = pvc.anchoLamPVC / 100, lg = pvc.largoLamPVC;
+      for (let y = 0, f = 0; y < r.A - 0.001; y += a, f++) {
+        const hh = (Math.min(r.A, y + a) - y) * esc;
+        s += `<rect x="${x0}" y="${y0 + y * esc}" width="${w}" height="${hh}" fill="${f % 2 ? 'var(--card)' : 'transparent'}" stroke="var(--border)" stroke-width="1"/>`;
+        for (let x = lg * (1 - (f % 2) * 0.5); x < r.L - 0.001 && r.L > lg; x += lg)
+          s += `<line x1="${x0 + x * esc}" y1="${y0 + y * esc}" x2="${x0 + x * esc}" y2="${y0 + y * esc + hh}" stroke="var(--edge)" stroke-width="2"/>`;
+      }
+    }
+    // Láminas de drywall como fondo sutil (2,44 a lo largo, 1,22 a lo ancho)
+    for (let y = 0, f = 0; !pvc && y < r.A - 0.001; y += 1.22, f++) {
       for (let x = f % 2 ? -1.22 : 0; x < r.L - 0.001; x += 2.44) {
         const xa = Math.max(0, x), xb = Math.min(r.L, x + 2.44);
         s += `<rect x="${x0 + xa * esc}" y="${y0 + y * esc}" width="${(xb - xa) * esc}" height="${(Math.min(r.A, y + 1.22) - y) * esc}" fill="none" stroke="var(--border)" stroke-width="1.5"/>`;
