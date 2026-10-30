@@ -219,6 +219,31 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
   @media (min-width: 700px) { .hero { padding-bottom: 72px; } }
+
+  /* PC: pantalla completa (desde 1024 px) */
+  @media (min-width: 1024px) {
+    .hero { padding-left: 32px; padding-right: 32px; }
+    .hero-in { max-width: none; }
+    main { max-width: none; padding: 0 32px 110px; display: grid; grid-template-columns: minmax(420px, 1fr) minmax(0, 1.35fr); gap: 20px; align-items: start; }
+    main > .card { margin-bottom: 0; }
+    .barra { padding-left: 32px; padding-right: 32px; }
+    .barra-in { max-width: none; justify-content: flex-end; }
+    button.btn.prim { flex: none; min-width: 260px; }
+    button.btn:hover { filter: brightness(1.05); }
+    .kpi .v { font-size: 1.6rem; }
+    .plano { max-height: 440px; }
+  }
+  @media (min-width: 1440px) {
+    #resultado:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; align-items: start; }
+    #resultado:not([hidden]) { grid-template-rows: auto auto auto auto 1fr auto; }
+    #resultado > .kpis { grid-column: 1 / -1; grid-row: 1; }
+    #resultado > .plano-wrap { grid-column: 1; grid-row: 2; }
+    #resultado > .leyenda { grid-column: 1; grid-row: 3; }
+    #resultado > .info-plano { grid-column: 1; grid-row: 4; }
+    #resultado > #lista { grid-column: 2; grid-row: 2 / 6; }
+    #resultado > .nota { grid-column: 1 / -1; grid-row: 6; }
+    #lista > .grupo:first-child { margin-top: 0; }
+  }
 </style>
 </head>
 <body data-modo="dw">
