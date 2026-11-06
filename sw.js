@@ -1,5 +1,5 @@
 // Cambia la versión cada vez que actualices archivos para forzar la recarga
-const CACHE = 'cielo-raso-v8';
+const CACHE = 'cielo-raso-v9';
 const ARCHIVOS = ['./', 'index.html', 'calculo.js', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -8,7 +8,7 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))));
+  e.waitUntil(/* Solo borra cachés de esta app: el sitio geol21.github.io lo comparten varias PWA */ caches.keys().then(ks => Promise.all(ks.filter(k => k.indexOf('cielo-raso-') === 0 && k !== CACHE).map(k => caches.delete(k)))));
   self.clients.claim();
 });
 
